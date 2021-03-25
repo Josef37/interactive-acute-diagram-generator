@@ -8,7 +8,7 @@ const board = JXG.JSXGraph.initBoard("box", {
   axis: false,
 });
 
-const numberOfPoints = 6;
+const numberOfPoints = 16;
 const {
   initialVertexCoordinates,
   initialDirectionCoordinates,

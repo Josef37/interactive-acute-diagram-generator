@@ -7,6 +7,7 @@ import {
   intersectPlaneLine,
 } from "./geometry-utils";
 import { math } from "./index";
+import { isEqualAbsTol } from "./utils";
 
 export function getPlanes(vertices, directions) {
   const basePlane = { normal: [0, 0, -1], point: [0, 0, 0] };
@@ -48,11 +49,7 @@ export function getEdges(vertices, planes) {
     const neighbors = getNeighbors(vertex, planes);
     for (const neighbor of neighbors) {
       edges.push([vertex, neighbor]);
-      if (
-        visited.some((visitedVertex) =>
-          _.every(math.equal(visitedVertex, neighbor))
-        )
-      ) {
+      if (visited.some(isEqualAbsTol(neighbor))) {
         continue;
       }
       queue.push(neighbor);

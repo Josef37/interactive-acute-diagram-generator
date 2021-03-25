@@ -15,7 +15,7 @@ export function intersectPlanes(plane1, plane2) {
 
   return {
     point: parser.get("P"),
-    heading: parser.get("H")
+    heading: parser.get("H"),
   };
 }
 
@@ -44,18 +44,18 @@ export function joinLines(line1, line2) {
 
   return {
     point: parser.get("P1"),
-    normal: parser.get("N")
+    normal: parser.get("N"),
   };
 }
 
 export function joinPoints(point1, point2, point3) {
   const line1 = {
     point: point1,
-    heading: math.subtract(point2, point1)
+    heading: math.subtract(point2, point1),
   };
   const line2 = {
     point: point1,
-    heading: math.subtract(point3, point1)
+    heading: math.subtract(point3, point1),
   };
 
   return joinLines(line1, line2);
