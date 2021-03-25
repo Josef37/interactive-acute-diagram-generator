@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "esbuild": "^0.9.7",
+    "js-file-download": "^0.4.12",
+    "jsxgraph": "^1.2.2",
     "lodash": "4.17.21",
     "mathjs": "9.3.0"
   },

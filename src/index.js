@@ -1,5 +1,9 @@
 import { all, create } from "mathjs";
+import _ from "lodash";
 import { getPlanes, getEdges } from "./polyhedron-calc";
+import "jsxgraph/distrib/jsxgraphcore";
+import "jsxgraph/distrib/jsxgraph.css";
+import fileDownload from "js-file-download";
 
 export const math = create(all);
 
@@ -8,7 +12,18 @@ const board = JXG.JSXGraph.initBoard("box", {
   axis: false,
 });
 
-const numberOfPoints = 16;
+const numberOfPoints = 10;
+const debounceInMs = 200;
+
+document
+  .querySelector("#svg-export")
+  .addEventListener("click", () =>
+    fileDownload(
+      new XMLSerializer().serializeToString(board.renderer.svgRoot),
+      "export.svg"
+    )
+  );
+
 const {
   initialVertexCoordinates,
   initialDirectionCoordinates,
@@ -18,7 +33,9 @@ let { vertices, directionVertices, edgeObjects } = setupBoardElements();
 
 vertices
   .concat(directionVertices)
-  .forEach((vertex) => vertex.on("drag", () => updateEdges()));
+  .forEach((vertex) =>
+    vertex.on("drag", _.debounce(updateEdges, debounceInMs))
+  );
 
 updateEdges();
 
@@ -46,12 +63,9 @@ function setupBoardElements() {
       math
         .add(initialVertexCoordinates[i], initialDirectionCoordinates[i])
         .slice(0, 2),
-      { withLabel: false }
+      { withLabel: false, color: "blue" }
     )
   );
-  const arrows = directionVertices.map((_v, i) => {
-    board.create("arrow", [vertices[i], directionVertices[i]]);
-  });
   let edgeObjects = [];
   return { vertices, directionVertices, edgeObjects };
 }
@@ -84,6 +98,7 @@ function updateEdgeObjects(edges) {
       straightFirst: false,
       straightLast: false,
       fixed: true,
+      color: "black",
     })
   );
 }

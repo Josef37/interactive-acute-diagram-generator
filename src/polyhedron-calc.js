@@ -30,10 +30,11 @@ export function getPlanes(vertices, directions) {
       math.add(vertices[i], [0, 0, 1])
     );
     const lineIntersection = intersectPlanes(normalPlane, planes[0]);
-    const plane = joinLines(lineIntersection, {
+    const baseLine = {
       point: vertices[i],
       heading: math.subtract(vertices[i + 1], vertices[i]),
-    });
+    };
+    const plane = joinLines(lineIntersection, baseLine);
     planes.unshift(plane);
   }
   return planes;
