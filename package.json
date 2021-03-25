@@ -1,7 +1,7 @@
 {
-  "name": "acute-polyhedron",
+  "name": "interactive-acute-diagram-generator",
   "version": "1.0.0",
-  "description": "",
+  "description": "Create an acute diagram for an n-gon interactively.",
   "main": "index.html",
   "scripts": {
     "watch": "npm run build -- --watch",
