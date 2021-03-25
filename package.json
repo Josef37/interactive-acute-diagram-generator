@@ -2,19 +2,24 @@
   "name": "interactive-acute-diagram-generator",
   "version": "1.0.0",
   "description": "Create an acute diagram for an n-gon interactively.",
-  "main": "index.html",
+  "main": "./index.html",
   "scripts": {
     "watch": "npm run build -- --watch",
-    "build": "esbuild src/index.js --bundle --outfile=index.js"
+    "build": "esbuild src/index.js --bundle --outfile=./index.js",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d . -s ./index.*"
   },
   "dependencies": {
-    "esbuild": "^0.9.7",
     "js-file-download": "^0.4.12",
     "jsxgraph": "^1.2.2",
     "lodash": "4.17.21",
     "mathjs": "9.3.0"
   },
+  "devDependencies": {
+    "esbuild": "^0.9.7",
+    "gh-pages": "^3.1.0"
+  },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "Josef Wittmann <josef.wittmann@tutanota.com>",
+  "license": "MIT"
 }
