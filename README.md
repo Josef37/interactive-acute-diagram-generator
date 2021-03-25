@@ -1,5 +1,7 @@
 # Interactive Acute Diagram Generator
 
+[Live Demo](https://josef37.github.io/interactive-acute-diagram-generator/index.html)
+
 Create an acute diagram for an n-gon interactively. All but one of the main arcs can have fixed direction.
 
 ![Example of an acute diagram generated with this tool](exports/export-1.svg)
