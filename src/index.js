@@ -12,8 +12,8 @@ const board = JXG.JSXGraph.initBoard("box", {
   axis: false,
 });
 
-const numberOfPoints = 10;
-const debounceInMs = 200;
+const numberOfPoints = 12;
+const debounceInMs = 100;
 
 document
   .querySelector("#svg-export")
@@ -23,7 +23,6 @@ document
       "export.svg"
     )
   );
-
 const {
   initialVertexCoordinates,
   initialDirectionCoordinates,
@@ -31,11 +30,10 @@ const {
 
 let { vertices, directionVertices, edgeObjects } = setupBoardElements();
 
-vertices
-  .concat(directionVertices)
-  .forEach((vertex) =>
-    vertex.on("drag", _.debounce(updateEdges, debounceInMs))
-  );
+const interactiveVertices = vertices.concat(directionVertices);
+interactiveVertices.forEach((vertex) =>
+  vertex.on("drag", _.debounce(updateEdges, debounceInMs))
+);
 
 updateEdges();
 
@@ -88,10 +86,12 @@ function getCoordinates() {
 }
 
 function updateEdgeObjects(edges) {
-  // We have to remove the points created with the edge, too.
-  board.removeObject(
-    edgeObjects.flatMap((edge) => [edge.point1, edge.point2, edge])
-  );
+  const objectsToRemove = edgeObjects.flatMap((edge) => [
+    edge.point1,
+    edge.point2,
+    edge,
+  ]);
+  board.removeObject(objectsToRemove);
 
   edgeObjects = edges.map(([p1, p2]) =>
     board.create("line", [p1.slice(0, 2), p2.slice(0, 2)], {

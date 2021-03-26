@@ -5,9 +5,10 @@ import {
   joinLines,
   pointInPlane,
   intersectPlaneLine,
+  pointInHalfspace,
 } from "./geometry-utils";
 import { math } from "./index";
-import { isEqualAbsTol } from "./utils";
+import { isEqualAbsTol, partitionArray } from "./utils";
 
 export function getPlanes(vertices, directions) {
   const basePlane = { normal: [0, 0, -1], point: [0, 0, 0] };
@@ -69,32 +70,44 @@ function getNeighbors(vertex, planes) {
   const rays = [];
   for (let i = 0; i < containingPlanes.length; i++) {
     for (let j = i + 1; j < containingPlanes.length; j++) {
-      const line = intersectPlanes(containingPlanes[i], containingPlanes[j]);
-      const otherPlanes = containingPlanes.filter(
-        (_p, index) => ![i, j].includes(index)
-      );
-      const dotProducts = otherPlanes.map((plane) =>
-        math.dot(plane.normal, line.heading)
+      const [
+        selectedPlanes,
+        otherContainingPlanes,
+      ] = partitionArray(containingPlanes, [i, j]);
+      const intersectionLine = intersectPlanes(...selectedPlanes);
+      const dotProducts = otherContainingPlanes.map((plane) =>
+        math.dot(plane.normal, intersectionLine.heading)
       );
       if (dotProducts.every((d) => d < 0)) {
-        rays.push(line);
+        rays.push(intersectionLine);
       } else if (dotProducts.every((d) => d > 0)) {
-        rays.push({ ...line, heading: math.multiply(-1, line.heading) });
+        rays.push({
+          ...intersectionLine,
+          heading: math.multiply(-1, intersectionLine.heading),
+        });
       }
     }
   }
 
   const neighbors = [];
   for (const ray of rays) {
+    const isInRayDirection = (point) =>
+      0 < math.dot(ray.heading, math.subtract(point, vertex));
+    const isInPolyhedron = (point) =>
+      planes.every((plane) => pointInHalfspace(point, plane));
     const intersections = otherPlanes
       .map((plane) => intersectPlaneLine(plane, ray))
-      .filter(
-        (point) => 0 < math.dot(ray.heading, math.subtract(point, vertex))
-      );
-    const closestIntersection = _.minBy(intersections, (point) =>
-      math.distance(point, vertex)
+      .filter(isInRayDirection);
+    const [closestIntersection] = intersections.reduce(
+      ([minPoint, minDistance], point) => {
+        const distance = math.distance(point, vertex);
+        return distance < minDistance && isInPolyhedron(point)
+          ? [point, distance]
+          : [minPoint, minDistance];
+      },
+      [undefined, Infinity]
     );
-    closestIntersection && neighbors.push(closestIntersection);
+    if (closestIntersection) neighbors.push(closestIntersection);
   }
 
   return neighbors;
